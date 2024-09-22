@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 const initialState = {
   products: [],
   userInfo: [],
+  searchTerm: "", // Add searchTerm to initial state
 };
 
 export const amazonSlice = createSlice({
@@ -14,27 +14,28 @@ export const amazonSlice = createSlice({
       const item = state.products.find((item) => item.id === action.payload.id);
       if (item) {
         item.quantity += action.payload.quantity;
-      } else state.products.push(action.payload);
+      } else {
+        state.products.push({ ...action.payload, quantity: 1 }); // Ensure quantity is initialized
+      }
     },
     deleteItem: (state, action) => {
-      state.products = state.products.filter(
-        (item) => item.id !== action.payload
-      );
+      state.products = state.products.filter((item) => item.id !== action.payload);
     },
-    resetCart: (state, action) => {
+    resetCart: (state) => {
       state.products = [];
     },
     incrementItem: (state, action) => {
       const item = state.products.find((item) => item.id === action.payload);
-      item.quantity++;
+      if (item) item.quantity++;
     },
     decrementItem: (state, action) => {
       const item = state.products.find((item) => item.id === action.payload);
-      if (item.quantity === 1) {
-        item.quantity = 1;
-      } else {
+      if (item && item.quantity > 1) {
         item.quantity--;
       }
+    },
+    setSearchTerm: (state, action) => { // Add setSearchTerm action
+      state.searchTerm = action.payload;
     },
   },
 });
@@ -45,6 +46,7 @@ export const {
   resetCart,
   incrementItem,
   decrementItem,
+  setSearchTerm, // Export the action
 } = amazonSlice.actions;
 
 export default amazonSlice.reducer;
